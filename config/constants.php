@@ -55,3 +55,5 @@ defined('ANDROID_LATEST_VERSION') or define('ANDROID_LATEST_VERSION','1.1.0');
 defined('COMMERCIAL_PHONE') or define('COMMERCIAL_PHONE','021-61318123');
 
 defined('LOCK_PATH') or define('LOCK_PATH', dirname(__FILE__).'/../../logs/lock/');
+
+defined('IMG_URL') or define('IMG_URL', 'http://testimg.afantizz.com/');

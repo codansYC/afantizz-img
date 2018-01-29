@@ -9,181 +9,123 @@
 namespace app\controllers;
 
 
-use app\utils\GlobalAction;
+use app\models\Image;
 use app\utils\UtilHelper;
 use app\utils\BizConsts;
-use app\models\Image;
 header("Access-Control-Allow-Origin: *"); # 跨域处理
 class UploadController extends BaseController {
 
-    function actionUpload()
+    function actionImage()
     {
-        $folder = 'upload';//'upload';//'devUpload';
-        //pc端多图上传、移动端单图上传 key的命名: file0,file1,file2 ...
-        $images = array();
-        for ($i = 0; $i < count($_FILES); $i++) {
-            $key = 'file'.$i;
+        $folder = 'upload';
+        $key = 'file';
+        try {
             $file = $_FILES[$key];
-            $img = $this->handleFile($file,$key,$folder);
-            array_push($images, $img);
+            $img = $this->handleFile($file,$folder);
+            $data = ['url' => (string)$img->url];
+            UtilHelper::echoResult(BizConsts::SUCCESS, BizConsts::SUCCESS_MSG, $data);
+        } catch (\Exception $e) {
+            UtilHelper::handleException($e);
         }
-        UtilHelper::echoResult(BizConsts::SUCCESS, BizConsts::SUCCESS_MSG, $images);
     }
 
-    function handleFile($file,$key,$folder) {
-        $tempFile = $file['tmp_name'];
-        $targetPath = $folder;
-        $type = next(explode(".", $file['name']));
-        $extension = next(explode("/", $file['type']));
-        $needRotate = ($type != $extension);
-        $originImageRandStr = GlobalAction::getTimeStr() . GlobalAction::getRandChar(12);
-        $originImageFile = $targetPath . '/' . $originImageRandStr . '.' . $extension;
-        $thumbImageRandStr = GlobalAction::getTimeStr() . GlobalAction::getRandChar(12);
-        $thumbImageFile = $targetPath . '/' . $thumbImageRandStr . '.' . $extension;
+    function handleFile($file,$folder) {
+        // 判断支持的格式
         $fileTypes = array('jpg', 'jpeg', 'gif', 'png');
         $fileParts = pathinfo($file['name']);
-
         $extension = strtolower($fileParts['extension']);
         if (!in_array($extension, $fileTypes)) {
             UtilHelper::echoExitResult(BizConsts::IMAGE_INVALID_ERRCODE, BizConsts::IMAGE_INVALID_ERRMSG);
         }
-
-        if (!$this->compressImage($tempFile, $originImageFile, $thumbImageFile, $needRotate)) {
-            UtilHelper::echoExitResult(BizConsts::UPLOAD_FAIL_ERRCODE, BizConsts::UPLOAD_FAIL_ERRMSG);
+        // 生成目录, 拼接文件路径
+        $dir = $folder . '/' .UtilHelper::getTimeStr('Ymd');
+        if (!file_exists($dir)) {
+            mkdir($dir);
         }
-
+        $targetFile = $dir . '/' . strtolower(UtilHelper::getRandChar(12)) . '.jpeg';
+        $thumbFile = $dir . '/' . strtolower(UtilHelper::getRandChar(12)) . '.jpeg';
+        // 临时文件
+        $tempFile = $file['tmp_name'];
+        $extension = next(explode("/", $file['type']));
+        $imgRes = $this->compressImage($extension,$tempFile);
+        imagejpeg($imgRes,$targetFile);
+        $thumbImageRes = $this->thumb($targetFile);
+        imagejpeg($thumbImageRes,$thumbFile);
+        imagedestroy($imgRes);
+        imagedestroy($thumbImageRes);
         $image = new Image();
-        $image->origin_url = $originImageFile;
-        $image->thumb_url = $thumbImageFile;
-        $image->key = $key;
+        $image->url = IMG_URL . $targetFile;
+        $image->thumb_url = IMG_URL . $thumbFile;
+        $image->save();
         return $image;
     }
 
-    /*
-        图片压缩
-        */
-    function compressImage($filePath,$bigImageFile,$smallImageFile,$needRotate) {
+    /*图片压缩*/
+    function compressImage($extension,$file) {
+        list($originW, $originH) = getimagesize($file);
+        $image = $this->getResource($file, $extension);
+        $compress = imagecreatetruecolor($originW, $originH);
+        imagecopyresampled($compress, $image, 0, 0, 0, 0, $originW, $originH, $originW, $originH);
+        imagedestroy($image);
+        return $compress;
+    }
 
-        $extension = next(explode(".",$bigImageFile));
+    function getResource($file, $extension) {
         switch ($extension) {
             case 'jpg':
-                $originImage = imagecreatefromjpg($filePath);
-                break;
+                return imagecreatefromjpg($file);
             case 'jpeg':
-                $originImage = imagecreatefromjpeg($filePath);
-                break;
+                return imagecreatefromjpeg($file);
             case 'png':
-                $originImage = imagecreatefrompng($filePath);
-                break;
+                return imagecreatefrompng($file);
             case 'gif':
-                $originImage = imagecreatefromgif($filePath);
-                break;
+                return imagecreatefromgif($file);
             default:
-
-                return false;
+                return null;
         }
-
-        list($originW, $originH) = getimagesize($filePath);
-        $w_h_ratio = $originW / $originH;
-        $final_w = 800;
-        $final_h = $final_w / $w_h_ratio;
-
-        if ($originImage) {
-            $compress = imagecreatetruecolor($final_w, $final_h);
-            imagecopyresampled($compress, $originImage, 0, 0, 0, 0, $final_w, $final_h, $originW, $originH);
-            $this->saveImage($extension,$compress,$bigImageFile,$needRotate);
-
-            if (!$this->cropImage($bigImageFile,$smallImageFile)) {
-                $this->saveImage($extension,$compress,$smallImageFile);
-            }
-            return true;
-        }
-
-        return false;
     }
 
     /*
-    图片剪裁
+    图片压缩、剪裁
     */
-    function cropImage($filePath,$smallImageFile) {
-        $extension = next(explode(".",$smallImageFile));
-        switch ($extension) {
-            case 'jpg':
-                $originImage = imagecreatefromjpg($filePath);
-                break;
-            case 'jpeg':
-                $originImage = imagecreatefromjpeg($filePath);
-                break;
-            case 'png':
-                $originImage = imagecreatefrompng($filePath);
-                break;
-            case 'gif':
-                $originImage = imagecreatefromgif($filePath);
-                break;
-            default:
-                return false;
-        }
-
-        list($img_w, $img_h) = getimagesize($filePath);
-        //剪裁后的宽高比
-        $w_h_ratio = 4.0 / 3.0;
-        if ($img_w / $img_h > $w_h_ratio) {
-            $new_h = $img_h;
-            $new_w = $img_h * $w_h_ratio;
-            $crop_y = 0;
-            $crop_x = ($img_w - $new_w) / 2.0;
-        } else if ($img_w / $img_h < $w_h_ratio) {
-            $new_w = $img_w;
-            $new_h = $new_w / $w_h_ratio;
-            $crop_x = 0;
-            $crop_y = ($img_h - $new_h) / 2;
+    function thumb($filename,$width=200,$height=150){
+        //获取原图的图像资源
+        $image = imagecreatefromjpeg($filename);
+        //获取原图像$filename的宽度$width_orig和高度$height_orig
+        list($width_orig,$height_orig) = getimagesize($filename);
+        $ratio_orig = $width_orig / $height_orig;
+        $ratio = $width / $height;
+        if ($ratio_orig > $ratio) {
+            $height_new = $height;
+            $width_new = $height_new * $ratio_orig;
         } else {
-            $new_w = $img_w;
-            $new_h = $img_h;
-            $crop_x = 0;
-            $crop_y = 0;
+            $width_new = $width;
+            $height_new = $width_new / $ratio_orig;
+        }
+        //将原图缩放到这个新创建的图片资源中
+        $image_scale = imagecreatetruecolor($width_new, $height_new);
+        //使用imagecopyresampled()函数进行缩放设置
+        imagecopyresampled($image_scale,$image,0,0,0,0,$width_new,$height_new,$width_orig,$height_orig);
+        imagedestroy($image);
+        // 剪裁
+        if ($width_new > $width) {
+            $cropX = ($width_new - $width) / 2;
+            $cropY = 0;
+        } else if ($height_new > $height) {
+            $cropX = 0;
+            $cropY = ($height_new - $height) / 2;
+        } else {
+            $cropX = 0;
+            $cropY = 0;
         }
 
-        //剪裁
-        $croped = imagecreatetruecolor($new_w, $new_h);
-        imagecopy($croped, $originImage, 0, 0, $crop_x, $crop_y, $img_w, $img_h);
-        if ($this->saveImage($extension,$croped,$smallImageFile)) {
-            return true;
-        }
-        return false;
-    }
+        $image_crop = imagecreatetruecolor($width, $height);
+        //使用imagecopyresampled()函数进行剪裁
+        imagecopyresampled($image_crop,$image_scale,0,0,$cropX,$cropY,$width,$height,$width,$height);
 
-    function saveImage($extension,$image,$file,$needRotate=false) {
-        $rotateAngle = -90;
-        if ($needRotate) {
-//        $image = imagerotate($image,$rotateAngle,0);
-        }
-        switch ($extension) {
-            case 'jpg':
-//            echo 'jpg';die;
-                if (imagejpg($image,$file)) {
-                    return true;
-                }
-                return false;
-            case 'jpeg':
-//            echo 'jpeg';die;
-                if (imagejpeg($image,$file)) {
-                    return true;
-                }
-                return false;
-            case 'png':
-                if (imagepng($image,$file)) {
-                    return true;
-                }
-                return false;
-            case 'gif':
-                if (imagegif($image,$file)) {
-                    return true;
-                }
-                return false;
-            default:
-                return false;
-        }
+        imagedestroy($image_scale);
+
+        return $image_crop;
     }
 
 }
