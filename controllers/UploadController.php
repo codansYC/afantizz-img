@@ -43,46 +43,97 @@ class UploadController extends BaseController {
             mkdir($dir);
         }
         $targetFile = $dir . '/' . strtolower(UtilHelper::getRandChar(12)) . '.jpeg';
+        $middleFile = $dir . '/' . strtolower(UtilHelper::getRandChar(12)) . '.jpeg';
         $thumbFile = $dir . '/' . strtolower(UtilHelper::getRandChar(12)) . '.jpeg';
         // 临时文件
         $tempFile = $file['tmp_name'];
         $extension = next(explode("/", $file['type']));
         $imgRes = $this->compressImage($extension,$tempFile);
         imagejpeg($imgRes,$targetFile);
+        $middleImageRes = $this->thumb($targetFile,800,600);
+        imagejpeg($middleImageRes,$middleFile);
         $thumbImageRes = $this->thumb($targetFile);
         imagejpeg($thumbImageRes,$thumbFile);
         imagedestroy($imgRes);
+        imagedestroy($middleImageRes);
         imagedestroy($thumbImageRes);
+
         $image = new Image();
-        $image->url = IMG_URL . $targetFile;
-        $image->thumb_url = IMG_URL . $thumbFile;
+        $image->url = DEV_IMG_URL . $targetFile;
+        $image->middle_url = DEV_IMG_URL . $middleFile;
+        $image->thumb_url = DEV_IMG_URL . $thumbFile;
         $image->save();
         return $image;
     }
 
     /*图片压缩*/
     function compressImage($extension,$file) {
-        list($originW, $originH) = getimagesize($file);
         $image = $this->getResource($file, $extension);
-        $compress = imagecreatetruecolor($originW, $originH);
-        imagecopyresampled($compress, $image, 0, 0, 0, 0, $originW, $originH, $originW, $originH);
+        list($originW, $originH) = getimagesize($file);
+        $imgW = $originW;
+        $imgH = $originH;
+        $exif = @exif_read_data($file);
+        $orientation = $exif['Orientation'];
+        switch ($orientation) {
+            case 3:
+                $image = imagerotate($image,180,0);
+                break;
+            case 6:
+                $image = imagerotate($image,-90,0);
+                $imgW = $originH;
+                $imgH = $originW;
+                break;
+            case 8:
+                $image = imagerotate($image,90,0);
+                $imgW = $originH;
+                $imgH = $originW;
+                break;
+            default:
+                break;
+        }
+        $compress = imagecreatetruecolor($imgW, $imgH);
+        imagecopyresampled($compress, $image, 0, 0, 0, 0, $imgW, $imgH, $imgW, $imgH);
         imagedestroy($image);
         return $compress;
     }
 
     function getResource($file, $extension) {
+        $image = null;
         switch ($extension) {
             case 'jpg':
-                return imagecreatefromjpg($file);
+                $image = imagecreatefromjpg($file);
+                break;
             case 'jpeg':
-                return imagecreatefromjpeg($file);
+                $image = imagecreatefromjpeg($file);
+                break;
             case 'png':
-                return imagecreatefrompng($file);
+                $image = imagecreatefrompng($file);
+                break;
             case 'gif':
-                return imagecreatefromgif($file);
+                $image = imagecreatefromgif($file);
+                break;
             default:
-                return null;
+                break;
         }
+        return $image;
+    }
+
+    function correctOrientation($image,$orientation) {
+
+        switch ($orientation) {
+            case 3:
+                $image = imagerotate($image,180,0);
+                break;
+            case 6:
+                $image = imagerotate($image,-90,0);
+                break;
+            case 8:
+                $image = imagerotate($image,90,0);
+                break;
+            default:
+                break;
+        }
+        return $image;
     }
 
     /*

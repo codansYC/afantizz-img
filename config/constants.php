@@ -56,4 +56,8 @@ defined('COMMERCIAL_PHONE') or define('COMMERCIAL_PHONE','021-61318123');
 
 defined('LOCK_PATH') or define('LOCK_PATH', dirname(__FILE__).'/../../logs/lock/');
 
-defined('IMG_URL') or define('IMG_URL', 'http://testimg.afantizz.com/');
+defined('IMG_URL') or define('IMG_URL', 'http://img.afantizz.com/');
+
+defined('TEST_IMG_URL') or define('TEST_IMG_URL', 'http://testimg.afantizz.com/');
+
+defined('DEV_IMG_URL') or define('DEV_IMG_URL', 'http://devimg.afantizz.com/');
