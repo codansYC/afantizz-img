@@ -26,8 +26,8 @@
       <file leaf-file-name="UploadController.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/controllers/UploadController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="32" column="24" selection-start-line="32" selection-start-column="24" selection-end-line="32" selection-end-column="24" />
+            <state relative-caret-position="102">
+              <caret line="31" column="40" selection-start-line="31" selection-start-column="40" selection-end-line="31" selection-end-column="40" />
               <folding>
                 <element signature="e#119#140#0#PHP" expanded="true" />
               </folding>
@@ -137,8 +137,7 @@
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="75" />
-    <option name="y" value="27" />
+    <option name="y" value="42" />
     <option name="width" value="1280" />
     <option name="height" value="709" />
   </component>
@@ -393,7 +392,7 @@
       <workItem from="1517219499164" duration="2595000" />
       <workItem from="1518423488430" duration="679000" />
       <workItem from="1518424242543" duration="1875000" />
-      <workItem from="1519283221430" duration="5735000" />
+      <workItem from="1519283221430" duration="6652000" />
     </task>
     <task id="LOCAL-00001" summary="添加图片">
       <created>1500205810113</created>
@@ -406,10 +405,10 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="798710000" />
+    <option name="totallyTimeSpent" value="799627000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="75" y="27" width="1280" height="709" extended-state="0" />
+    <frame x="0" y="42" width="1280" height="709" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2584814" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
@@ -667,8 +666,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/controllers/UploadController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="32" column="24" selection-start-line="32" selection-start-column="24" selection-end-line="32" selection-end-column="24" />
+        <state relative-caret-position="102">
+          <caret line="31" column="40" selection-start-line="31" selection-start-column="40" selection-end-line="31" selection-end-column="40" />
           <folding>
             <element signature="e#119#140#0#PHP" expanded="true" />
           </folding>
