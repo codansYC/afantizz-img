@@ -74,7 +74,6 @@ class UploadController extends BaseController {
         $imgW = $originW;
         $imgH = $originH;
         $exif = @exif_read_data($file);
-        var_dump($exif);
         $orientation = $exif['Orientation'];
         switch ($orientation) {
             case 3:
