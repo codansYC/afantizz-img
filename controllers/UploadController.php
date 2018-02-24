@@ -30,7 +30,7 @@ class UploadController extends BaseController {
     }
 
     function handleFile($file,$folder) {
-        var_dump($file);exit;
+        var_dump($file);
         // 判断支持的格式
         $fileTypes = array('jpg', 'jpeg', 'gif', 'png');
         $fileParts = pathinfo($file['name']);
