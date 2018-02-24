@@ -58,10 +58,11 @@ class UploadController extends BaseController {
         imagedestroy($middleImageRes);
         imagedestroy($thumbImageRes);
 
+        $imageUrl = TEST_IMG_URL;
         $image = new Image();
-        $image->url = DEV_IMG_URL . $targetFile;
-        $image->middle_url = DEV_IMG_URL . $middleFile;
-        $image->thumb_url = DEV_IMG_URL . $thumbFile;
+        $image->url = $imageUrl . $targetFile;
+        $image->middle_url = $imageUrl . $middleFile;
+        $image->thumb_url = $imageUrl . $thumbFile;
         $image->save();
         return $image;
     }
