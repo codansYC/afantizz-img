@@ -26,8 +26,8 @@
       <file leaf-file-name="UploadController.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/controllers/UploadController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="213">
-              <caret line="77" column="24" selection-start-line="77" selection-start-column="24" selection-end-line="77" selection-end-column="24" />
+            <state relative-caret-position="145">
+              <caret line="73" column="24" selection-start-line="73" selection-start-column="24" selection-end-line="73" selection-end-column="24" />
               <folding>
                 <element signature="e#119#140#0#PHP" expanded="true" />
               </folding>
@@ -393,7 +393,7 @@
       <workItem from="1517219499164" duration="2595000" />
       <workItem from="1518423488430" duration="679000" />
       <workItem from="1518424242543" duration="1875000" />
-      <workItem from="1519283221430" duration="7719000" />
+      <workItem from="1519283221430" duration="7769000" />
     </task>
     <task id="LOCAL-00001" summary="添加图片">
       <created>1500205810113</created>
@@ -406,7 +406,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="800694000" />
+    <option name="totallyTimeSpent" value="800744000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="38" y="23" width="1280" height="709" extended-state="0" />
@@ -667,8 +667,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/controllers/UploadController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="213">
-          <caret line="77" column="24" selection-start-line="77" selection-start-column="24" selection-end-line="77" selection-end-column="24" />
+        <state relative-caret-position="145">
+          <caret line="73" column="24" selection-start-line="73" selection-start-column="24" selection-end-line="73" selection-end-column="24" />
           <folding>
             <element signature="e#119#140#0#PHP" expanded="true" />
           </folding>

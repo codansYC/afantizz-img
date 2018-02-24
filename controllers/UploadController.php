@@ -70,6 +70,8 @@ class UploadController extends BaseController {
 
     /*图片压缩*/
     function compressImage($extension,$file) {
+        $exif = @exif_read_data($file);
+        var_dump($exif);
         $image = $this->getResource($file, $extension);
         list($originW, $originH) = getimagesize($file);
         $imgW = $originW;
