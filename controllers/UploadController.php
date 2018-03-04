@@ -58,7 +58,7 @@ class UploadController extends BaseController {
         imagedestroy($middleImageRes);
         imagedestroy($thumbImageRes);
 
-        $imageUrl = TEST_IMG_URL;
+        $imageUrl = IMG_URL;
         $image = new Image();
         $image->url = $imageUrl . $targetFile;
         $image->middle_url = $imageUrl . $middleFile;
@@ -74,23 +74,25 @@ class UploadController extends BaseController {
         $imgW = $originW;
         $imgH = $originH;
         $exif = @exif_read_data($file);
-        $orientation = $exif['Orientation'];
-        switch ($orientation) {
-            case 3:
-                $image = imagerotate($image,180,0);
-                break;
-            case 6:
-                $image = imagerotate($image,-90,0);
-                $imgW = $originH;
-                $imgH = $originW;
-                break;
-            case 8:
-                $image = imagerotate($image,90,0);
-                $imgW = $originH;
-                $imgH = $originW;
-                break;
-            default:
-                break;
+        if (isset($exif['Orientation'])) {
+            $orientation = $exif['Orientation'];
+            switch ($orientation) {
+                case 3:
+                    $image = imagerotate($image,180,0);
+                    break;
+                case 6:
+                    $image = imagerotate($image,-90,0);
+                    $imgW = $originH;
+                    $imgH = $originW;
+                    break;
+                case 8:
+                    $image = imagerotate($image,90,0);
+                    $imgW = $originH;
+                    $imgH = $originW;
+                    break;
+                default:
+                    break;
+            }
         }
         $compress = imagecreatetruecolor($imgW, $imgH);
         imagecopyresampled($compress, $image, 0, 0, 0, 0, $imgW, $imgH, $imgW, $imgH);
