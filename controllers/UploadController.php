@@ -50,6 +50,7 @@ class UploadController extends BaseController {
         $fileFragment = explode("/", $file['type']);
         $extension = $fileFragment[1];
         $imgRes = $this->compressImage($extension,$tempFile);
+        echo '---------';return;
         imagejpeg($imgRes,$targetFile);
         $middleImageRes = $this->thumb($targetFile,800,600);
         imagejpeg($middleImageRes,$middleFile);
