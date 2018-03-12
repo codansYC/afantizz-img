@@ -70,13 +70,13 @@ class UploadController extends BaseController {
 
     /*图片压缩*/
     function compressImage($extension,$file) {
+        echo '=++++++++';
         $image = $this->getResource($file, $extension);
         list($originW, $originH) = getimagesize($file);
         $imgW = $originW;
         $imgH = $originH;
-        echo '=======';
         $exif = @exif_read_data($file);
-        echo '=++++++++';
+
         if (isset($exif['Orientation'])) {
             $orientation = $exif['Orientation'];
             switch ($orientation) {
@@ -97,7 +97,6 @@ class UploadController extends BaseController {
                     break;
             }
         }
-        echo '-------';return;
         $compress = imagecreatetruecolor($imgW, $imgH);
         imagecopyresampled($compress, $image, 0, 0, 0, 0, $imgW, $imgH, $imgW, $imgH);
         imagedestroy($image);
