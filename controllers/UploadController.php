@@ -49,9 +49,7 @@ class UploadController extends BaseController {
         $tempFile = $file['tmp_name'];
         $fileFragment = explode("/", $file['type']);
         $extension = $fileFragment[1];
-        echo '---------';return;
         $imgRes = $this->compressImage($extension,$tempFile);
-
         imagejpeg($imgRes,$targetFile);
         $middleImageRes = $this->thumb($targetFile,800,600);
         imagejpeg($middleImageRes,$middleFile);
@@ -76,7 +74,9 @@ class UploadController extends BaseController {
         list($originW, $originH) = getimagesize($file);
         $imgW = $originW;
         $imgH = $originH;
+        echo '=======';
         $exif = @exif_read_data($file);
+        echo '=++++++++';
         if (isset($exif['Orientation'])) {
             $orientation = $exif['Orientation'];
             switch ($orientation) {
@@ -97,6 +97,7 @@ class UploadController extends BaseController {
                     break;
             }
         }
+        echo '-------';return;
         $compress = imagecreatetruecolor($imgW, $imgH);
         imagecopyresampled($compress, $image, 0, 0, 0, 0, $imgW, $imgH, $imgW, $imgH);
         imagedestroy($image);
