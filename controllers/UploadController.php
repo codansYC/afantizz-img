@@ -17,6 +17,7 @@ class UploadController extends BaseController {
 
     function actionImage()
     {
+        echo 123;return;
         $folder = 'upload';
         $key = 'file';
         try {
