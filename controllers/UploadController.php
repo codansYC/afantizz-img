@@ -47,7 +47,8 @@ class UploadController extends BaseController {
         $thumbFile = $dir . '/' . strtolower(UtilHelper::getRandChar(12)) . '.jpeg';
         // 临时文件
         $tempFile = $file['tmp_name'];
-        $extension = next(explode("/", $file['type']));
+        $fileFragment = explode("/", $file['type']);
+        $extension = next($fileFragment);
         $imgRes = $this->compressImage($extension,$tempFile);
         imagejpeg($imgRes,$targetFile);
         $middleImageRes = $this->thumb($targetFile,800,600);
