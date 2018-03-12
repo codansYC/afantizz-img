@@ -48,6 +48,7 @@ class UploadController extends BaseController {
         // 临时文件
         $tempFile = $file['tmp_name'];
         $fileFragment = explode("/", $file['type']);
+        var_dump($fileFragment);return;
         $extension = next($fileFragment);
         $imgRes = $this->compressImage($extension,$tempFile);
         imagejpeg($imgRes,$targetFile);
